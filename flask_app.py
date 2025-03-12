@@ -17,26 +17,20 @@ def preprocess_image(file):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        # Check if a file was uploaded in the POST request
         if "file" not in request.files:
             return "No file uploaded", 400
         
         file = request.files["file"]
-
-        # Check if the file is empty
+        
         if file.filename == "":
             return "Empty file name", 400
         
-        # Check if the file is an allowed image type
         if file:
             img = preprocess_image(file)
-
-            # Get prediction from the model
             prediction = np.argmax(model.predict(img))
-            return f"Predicted Class: {prediction}"
-
-    # Render the index.html template from the 'templates' folder
-    return render_template('index.html')
+            return render_template('index.html', prediction=prediction)  # Render index.html with prediction
+        
+    return render_template('index.html')  # Render index.html for GET requests
 
 if __name__ == "__main__":
     app.run(debug=True)
